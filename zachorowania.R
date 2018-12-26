@@ -74,3 +74,10 @@ rm(placement)
 sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok, gender=sickness$plec, 
                                                   icd10=sickness$icd10, placement=sickness$placement), FUN=sum)
 #actually we somehow can map countys -> https://pl.wikisource.org/wiki/Polskie_powiaty_wed%C5%82ug_kodu_TERYT
+
+
+
+#Ideas how to visualize the data:
+#1. If we decode the countys we can draw on map how many cancers we had in given year (we could differentiate by the type, gender)
+#2. Graph showing what trends are visible in number of people getting sick through the years (differentiate gender, type)
+
