@@ -1,5 +1,7 @@
 #Read in data
 sickness <- read.csv("zachorowania/Zachorowanianowotwory1999-2015powiaty.csv", header = T, sep=";", colClasses = c("numeric", "factor", "factor", "factor", "numeric"))
+countys <- read.csv("powiaty.cleaned2.csv", header = F, sep=",", colClasses = c("factor", "factor"))
+sickness$countys <- countys$V1[sickness$powiat]
 print(levels(sickness$powiat))
 #Change the codes to be consisted along all rows
 sickness$icd10[sickness$icd10 == "c17"] <- "C17"
