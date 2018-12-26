@@ -1,6 +1,8 @@
 #Read in data
 sickness <- read.csv("zachorowania/Zachorowanianowotwory1999-2015powiaty.csv", header = T, sep=";", colClasses = c("numeric", "factor", "factor", "factor", "numeric"))
+#Read countys coding
 countys <- read.csv("powiaty.cleaned2.csv", header = F, sep=",", colClasses = c("factor", "factor"))
+#Match codes to countys in one dataset
 sickness$countys <- countys$V1[sickness$powiat]
 print(levels(sickness$powiat))
 #Change the codes to be consisted along all rows
@@ -73,8 +75,9 @@ sickness$placement <- placement[sickness$icd10]
 rm(placement)
 #aggregate do drop the info about countys as it is useless, because there is more codes
 #than countys in Poland and we don't have any info about how it was coded
-sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok, gender=sickness$plec, 
-                                                  icd10=sickness$icd10, placement=sickness$placement), FUN=sum)
+
+#sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok, gender=sickness$plec, 
+#                                                  icd10=sickness$icd10, placement=sickness$placement), FUN=sum)
 #actually we somehow can map countys -> https://pl.wikisource.org/wiki/Polskie_powiaty_wed%C5%82ug_kodu_TERYT
 
 
