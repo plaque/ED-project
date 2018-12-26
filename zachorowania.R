@@ -68,3 +68,8 @@ names(placement) <- c(levels(sickness$icd10))
 sickness$placement <- placement[sickness$icd10]
 #Clean temporary set
 rm(placement)
+#aggregate do drop the info about countys as it is useless, because there is more codes
+#than countys in Poland and we don't have any info about how it was coded
+sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok, gender=sickness$plec, 
+                                                  icd10=sickness$icd10, placement=sickness$placement), FUN=sum)
+
