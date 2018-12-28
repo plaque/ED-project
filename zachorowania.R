@@ -78,6 +78,7 @@ sickness$placement <- placement[sickness$icd10]
 
 #sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok, gender=sickness$plec, 
 #                                                  icd10=sickness$icd10, placement=sickness$placement), FUN=sum)
+sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok), FUN=sum)
 #actually we somehow can map countys -> https://pl.wikisource.org/wiki/Polskie_powiaty_wed%C5%82ug_kodu_TERYT
 
 

@@ -10,9 +10,9 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-#  output$cancer_years <- renderPlot(
-#    #hist(input$gender)
-#  )
+  output$cancer_years <- renderPlot(
+    plot(sick$year,sick$x, 'l')
+  )
   
 }
 
