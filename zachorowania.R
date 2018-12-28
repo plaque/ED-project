@@ -98,12 +98,13 @@ sickness$placement <- placement[sickness$icd10]
 
 narrow_dataset <- function(gender, type_of_sickness){
   narrowed_data <- sickness
-    if(gender == "K" || gender == "M"){
+  if(gender != "All"){
     narrowed_data <- sickness[sickness$plec == gender, ]
   }
-  narrowed_data <- sickness[sickness$placement == type_of_sickness, ]
+  narrowed_data <- narrowed_data[narrowed_data$placement == type_of_sickness, ]
   narrowed_data <- aggregate(narrowed_data$SUM_of_liczba, by=list(rok=narrowed_data$rok, 
                                                            plec=narrowed_data$plec), FUN=sum)
+  print(narrowed_data)
   return(narrowed_data)  
 }
 
