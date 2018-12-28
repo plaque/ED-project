@@ -72,7 +72,7 @@ names(placement) <- c(levels(sickness$icd10))
 #Work placement into the dataset for consistency
 sickness$placement <- placement[sickness$icd10]
 #Clean temporary set
-rm(placement)
+#rm(placement)
 #aggregate do drop the info about countys as it is useless, because there is more codes
 #than countys in Poland and we don't have any info about how it was coded
 
