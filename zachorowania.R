@@ -1,5 +1,5 @@
 #Read in data
-sickness <- read.csv("zachorowania/Zachorowanianowotwory1999-2015powiaty.csv", header = T, sep=";", colClasses = c("numeric", "factor", "factor", "factor", "numeric"))
+sickness <- read.csv("zachorowania/Zachorowanianowotwory1999-2015powiaty.csv", header = T, sep=";", colClasses = c("numeric", "factor", "character", "character", "numeric"))
 #Read countys coding
 countys <- read.csv("powiaty.cleaned2.csv", header = F, sep=",", colClasses = c("factor", "factor"))
 #Match codes to countys in one dataset
@@ -9,11 +9,10 @@ print(levels(sickness$powiat))
 sickness$icd10[sickness$icd10 == "c17"] <- "C17"
 sickness$icd10[sickness$icd10 == "c53"] <- "C53"
 sickness$icd10[sickness$icd10 == "c83"] <- "C83"
-sickness$icd10 <- as.factor(sickness$icd10)
+#sickness$icd10 <- as.factor(sickness$icd10)
 #To drop the levels that we deleted in previouse step
-sickness$icd10 <- droplevels(sickness$icd10)
+#sickness$icd10 <- droplevels(sickness$icd10)
 #Map codes to placement/type of cancer, so it's easier to tell what is what
-placement <- c(levels(sickness$icd10))
 placement <- c("C00 Lip", "C01 Base of tongue", 
                "C02 Other and unspecified parts of tongue",
                "C03 Gum", "C04 Floor of mouth", "C05 Palate", 
@@ -68,7 +67,7 @@ placement <- c("C00 Lip", "C01 Base of tongue",
                "D04 Skin ", "D05 breast", "D06 cervix uteri", 
                "D07 Other and unspecified genital organs", 
                "D09 Other and unspecified sites")
-names(placement) <- c(levels(sickness$icd10))
+names(placement) <- c(sort(unique(sickness$icd10)))
 #Work placement into the dataset for consistency
 sickness$placement <- placement[sickness$icd10]
 #Clean temporary set
@@ -78,12 +77,31 @@ sickness$placement <- placement[sickness$icd10]
 
 #sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok, gender=sickness$plec, 
 #                                                  icd10=sickness$icd10, placement=sickness$placement), FUN=sum)
-sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok), FUN=sum)
+#sick <- aggregate(sickness$SUM_of_liczba, by=list(year=sickness$rok), FUN=sum)
+
+
 #actually we somehow can map countys -> https://pl.wikisource.org/wiki/Polskie_powiaty_wed%C5%82ug_kodu_TERYT
 
+#Narrow down the dataset
+#sicknessC00 <- sickness[sickness$icd10 == "C01", ]
+#sicknessC00 <- aggregate(sickness$SUM_of_liczba, by=list(rok=sickness$rok, 
+#                                                         plec=sickness$plec), FUN=sum)
 
+#Plot narrowed dataset
+#ggplot(data = sicknessC00) +
+#  geom_point(mapping = aes(x = sicknessC00$rok, y = sicknessC00$x, 
+#                           color = sicknessC00$plec))
 
 #Ideas how to visualize the data:
 #1. If we decode the countys we can draw on map how many cancers we had in given year (we could differentiate by the type, gender)
 #2. Graph showing what trends are visible in number of people getting sick through the years (differentiate gender, type)
 
+narrow_dataset <- function(gender, type_of_sickness){
+  if(gender != "All"){
+    narrowed_data <- sickness[sickness$plec == gender, ]
+  }
+  narrowed_data <- sickness[sickness$placement == type_of_sickness, ]
+  narrowed_data <- aggregate(narrowed_data$SUM_of_liczba, by=list(rok=narrowed_data$rok, 
+                                                           plec=narrowed_data$plec), FUN=sum)
+  return(narrowed_data)  
+}
