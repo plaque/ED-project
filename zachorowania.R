@@ -97,7 +97,8 @@ sickness$placement <- placement[sickness$icd10]
 #2. Graph showing what trends are visible in number of people getting sick through the years (differentiate gender, type)
 
 narrow_dataset <- function(gender, type_of_sickness){
-  if(gender != "All"){
+  narrowed_data <- sickness
+    if(gender == "K" || gender == "M"){
     narrowed_data <- sickness[sickness$plec == gender, ]
   }
   narrowed_data <- sickness[sickness$placement == type_of_sickness, ]
@@ -105,3 +106,7 @@ narrow_dataset <- function(gender, type_of_sickness){
                                                            plec=narrowed_data$plec), FUN=sum)
   return(narrowed_data)  
 }
+
+#library("maptools")
+#powiaty <- readShapePoly("POWIATY.shp")
+#plot(powiaty) 
