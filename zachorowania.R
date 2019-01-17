@@ -1,3 +1,8 @@
+#Wczytaj mapę
+library(maptools)
+powiaty <- readShapePoly("POWIATY.shp")
+powiaty@data$nazwa <- as.character(powiaty$NAZWA)
+
 #Read in data
 sickness <- read.csv("zachorowania/Zachorowanianowotwory1999-2015powiaty.csv", header = T, sep=";", colClasses = c("numeric", "factor", "character", "character", "numeric"))
 #Read countys coding
@@ -9,6 +14,8 @@ print(levels(sickness$powiat))
 sickness$icd10[sickness$icd10 == "c17"] <- "C17"
 sickness$icd10[sickness$icd10 == "c53"] <- "C53"
 sickness$icd10[sickness$icd10 == "c83"] <- "C83"
+#Change to english
+sickness$plec[sickness$plec == "K"] <- "F"
 #sickness$icd10 <- as.factor(sickness$icd10)
 #To drop the levels that we deleted in previouse step
 #sickness$icd10 <- droplevels(sickness$icd10)
@@ -96,18 +103,17 @@ sickness$placement <- placement[sickness$icd10]
 #1. If we decode the countys we can draw on map how many cancers we had in given year (we could differentiate by the type, gender)
 #2. Graph showing what trends are visible in number of people getting sick through the years (differentiate gender, type)
 
-narrow_dataset <- function(gender, type_of_sickness){
+narrow_dataset <- function(gender, type_of_sickness, county){
   narrowed_data <- sickness
   if(gender != "All"){
     narrowed_data <- sickness[sickness$plec == gender, ]
   }
+  narrowed_data <- narrowed_data[narrowed_data$countys == county, ]
   narrowed_data <- narrowed_data[narrowed_data$placement == type_of_sickness, ]
   narrowed_data <- aggregate(narrowed_data$SUM_of_liczba, by=list(rok=narrowed_data$rok, 
                                                            plec=narrowed_data$plec), FUN=sum)
+  #narrowed_data <- aggregate(narrowed_data$SUM_of_liczba, by=list(rok=narrowed_data$rok, 
+  #                                                                plec=narrowed_data$county), FUN=sum)
   print(narrowed_data)
   return(narrowed_data)  
 }
-
-#library("maptools")
-#powiaty <- readShapePoly("POWIATY.shp")
-#plot(powiaty) 
