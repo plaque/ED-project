@@ -1,15 +1,19 @@
 #Wczytaj mapę
 library(maptools)
-powiaty <- readShapePoly("POWIATY.shp")
-powiaty@data$nazwa <- as.character(powiaty$NAZWA)
+woj_map <- readShapePoly("województwa.shp")
+woj_map@data <- woj_map@data[ , c(5,6)]
+woj_map@data$nazwa <- as.character(woj_map$jpt_nazwa_)
+woj_map.gg <- fortify(woj_map, region="nazwa")
+#Województwa - powiaty
+pow_woj = read.table("kod_woj_clean", header = FALSE, sep = " ", colClasses = c("factor", "factor"))
 
 #Read in data
 sickness <- read.csv("zachorowania/Zachorowanianowotwory1999-2015powiaty.csv", header = T, sep=";", colClasses = c("numeric", "factor", "character", "character", "numeric"))
 #Read countys coding
 countys <- read.csv("powiaty.cleaned2.csv", header = F, sep=",", colClasses = c("factor", "factor"))
 #Match codes to countys in one dataset
+sickness$voivodeship <- pow_woj$V2[sickness$powiat]
 sickness$countys <- countys$V1[sickness$powiat]
-print(levels(sickness$powiat))
 #Change the codes to be consisted along all rows
 sickness$icd10[sickness$icd10 == "c17"] <- "C17"
 sickness$icd10[sickness$icd10 == "c53"] <- "C53"
@@ -103,17 +107,19 @@ sickness$placement <- placement[sickness$icd10]
 #1. If we decode the countys we can draw on map how many cancers we had in given year (we could differentiate by the type, gender)
 #2. Graph showing what trends are visible in number of people getting sick through the years (differentiate gender, type)
 
-narrow_dataset <- function(gender, type_of_sickness, county){
+narrow_dataset <- function(gender, type_of_sickness, voivodeship=NULL, year=NULL){
   narrowed_data <- sickness
   if(gender != "All"){
-    narrowed_data <- sickness[sickness$plec == gender, ]
+    narrowed_data <- narrowed_data[narrowed_data$plec == gender, ]
   }
-  narrowed_data <- narrowed_data[narrowed_data$countys == county, ]
+  if(!is.null(voivodeship)){
+    narrowed_data <- narrowed_data[narrowed_data$voivodeship == voivodeship, ]
+  }
+  if(!is.null(year)){
+    narrowed_data <- narrowed_data[narrowed_data$rok == year, ]
+  }
   narrowed_data <- narrowed_data[narrowed_data$placement == type_of_sickness, ]
-  narrowed_data <- aggregate(narrowed_data$SUM_of_liczba, by=list(rok=narrowed_data$rok, 
-                                                           plec=narrowed_data$plec), FUN=sum)
   #narrowed_data <- aggregate(narrowed_data$SUM_of_liczba, by=list(rok=narrowed_data$rok, 
   #                                                                plec=narrowed_data$county), FUN=sum)
-  print(narrowed_data)
   return(narrowed_data)  
 }
